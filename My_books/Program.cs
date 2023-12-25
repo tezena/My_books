@@ -19,6 +19,10 @@ builder.Services.AddDbContext<BooksDbContext>(Options => Options.UseSqlServer(
 //configuer services
 
 builder.Services.AddTransient<BookServices>();
+builder.Services.AddTransient<AuthorServices>();
+builder.Services.AddTransient<PublisherServices>();
+
+
 
 var app = builder.Build();
 

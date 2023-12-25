@@ -24,16 +24,32 @@ namespace My_books.Services
                 id = Guid.NewGuid(),
                 Title = book.Title,
                 Description = book.Description,
-                Author = book.Author,
+           
                 Genre = book.Genre,
                 IsRead = book.IsRead,
                 ReadDate = book.IsRead ? book.ReadDate.Value : null,
                 Rate = book.Rate,
                 CoverUrl = book.CoverUrl,
-                DateAdded = DateTime.Now
+                DateAdded = DateTime.Now,
+                PublisherId= book.PublisherId,
             };
               await    _context.Books.AddAsync(_book);
           await  _context.SaveChangesAsync();
+
+            foreach (Guid Id in book.AuthorsId)
+            {
+                var book_author = new Author_Book()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId= Id,
+                    BookId=_book.id
+                    };
+
+                await _context.BookAuthors.AddAsync(book_author);
+                await _context.SaveChangesAsync();
+
+            }
+
         }
 
         public async Task<List<Book>> GetAllBooks()
@@ -54,7 +70,7 @@ namespace My_books.Services
             {
                 _book.Title = book.Title;
                 _book.Description = book.Description;   
-                _book.Author = book.Author;
+              
                 _book.IsRead = book.IsRead;
                 _book.Genre = book.Genre;
                 _book.ReadDate = book.ReadDate;
@@ -73,6 +89,7 @@ namespace My_books.Services
 
 
         }
+
         public async Task<bool> DeleteBook(Guid id)
         {
             var book=await _context.Books.FindAsync(id);
