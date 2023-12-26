@@ -52,14 +52,44 @@ namespace My_books.Services
 
         }
 
-        public async Task<List<Book>> GetAllBooks()
+        public async Task<List<BookGetVM>> GetAllBooks()
         {
-             return await _context.Books.ToListAsync();
+            var _books = await _context.Books.Select(book => new BookGetVM()
+            {
+                id = book.id,
+                Title = book.Title,
+                Description = book.Description,
+                Genre = book.Genre,
+                IsRead = book.IsRead,
+                Rate = book.Rate,
+                ReadDate = book.ReadDate,
+                CoverUrl = book.CoverUrl,
+                PublisherName = book.Publisher.Name,
+                AuthorsName = book.author_Books.Select(a => a.Author.FullName).ToList(),
+            }).ToListAsync();
+
+
+            return _books;
         }
 
-        public async Task<Book> GetBookById(Guid id)
+        public async Task<BookGetVM> GetBookById(Guid id)
         {
-            return await _context.Books.FindAsync(id);
+            var _book =await _context.Books.Where(b => b.id == id).Select(book => new BookGetVM()
+            {
+                id=book.id,
+                Title = book.Title,
+                Description = book.Description,
+                Genre = book.Genre,
+                IsRead = book.IsRead,
+                Rate = book.Rate,
+                ReadDate = book.ReadDate,
+                CoverUrl = book.CoverUrl,
+                PublisherName = book.Publisher.Name,
+                AuthorsName = book.author_Books.Select(a => a.Author.FullName).ToList(),
+            }).FirstOrDefaultAsync();
+
+
+            return _book;
         }
 
         public async Task<Book> UpdateBook(BookVM book,Guid id)

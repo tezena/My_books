@@ -34,5 +34,15 @@ namespace My_books.Controllers
 
             return Ok(authors);
         }
+
+        [HttpGet]
+        [Route("{id:guid}")]
+
+        public async Task<IActionResult> GetAuthorById([FromRoute] Guid id)
+        {
+            var author = await _authorService.GetAuthorById(id);
+
+            return Ok(author);
+        }
     }
 }

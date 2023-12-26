@@ -26,9 +26,21 @@ namespace My_books.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Publisher>> GetAllPublishers()
+        public async Task<List<PublisherWithBooksVM>> GetAllPublishers()
         {
-            return await _context.Publishers.ToListAsync();
+            var _publishers = await _context.Publishers.Select(publisher => new PublisherWithBooksVM()
+            {
+                Id = publisher.Id,
+                Name = publisher.Name,
+                
+                BookAouthor=publisher.Books.Select(book=>new BookWAuthor()
+                {
+                    title = book.Title,
+                    Authors=book.author_Books.Select(a=>a.Author.FullName).ToList()
+                }).ToList(),
+            }).ToListAsync();
+
+            return _publishers;
         }
     }
 }

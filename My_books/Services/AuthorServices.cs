@@ -25,9 +25,31 @@ namespace My_books.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Author>> GetAllAuthors()
+        public async Task<List<AuthorWithBooksVM>> GetAllAuthors()
+        { 
+            var _authors=await _context.Authors.Select(author=>new AuthorWithBooksVM()
+            {
+                Id = author.Id,
+                FullName=author.FullName,
+                BooksName=author.author_Books.Select(b=>b.Book.Title).ToList(),
+            }).ToListAsync();
+
+            return _authors;
+            
+        }
+
+
+        public async Task<AuthorWithBooksVM> GetAuthorById(Guid id)
         {
-            return await _context.Authors.ToListAsync();
+            var _author = await _context.Authors.Where(a => a.Id == id).Select(author => new AuthorWithBooksVM()
+            {
+                Id = author.Id,
+                FullName = author.FullName,
+                BooksName = author.author_Books.Select(b => b.Book.Title).ToList(),
+            }).FirstOrDefaultAsync();
+
+            return _author;
+
         }
     }
 }
